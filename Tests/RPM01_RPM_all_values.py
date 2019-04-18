@@ -10,31 +10,7 @@ import sys
 import os
 import logging
 import numpy
-
-#this function will give us the values data bytes for particular RPM value
-def getRPMbytes(RPM):
-    newRPM = numpy.int16(RPM)
-    data = bytearray(8)
-    data[3] = data[2] = data[1] = data[0] = 0
-    data[4] = numpy.uint8(newRPM)
-    data[5] = numpy.uint8(newRPM>>8)
-    data[6] = numpy.uint8(newRPM>>16)
-    data[7] = numpy.uint8(newRPM>>24)
-    return data
-
-#this function will take the string from ECU and extract param into dictionary
-def extract_param_from_string(string):
-    param_dict = {}
-    list_of_param = string.split(' ')
-    for i in range(len(list_of_param)):
-        try :
-            param,value = list_of_param[i].split(':')
-            value = int(value)
-            param_dict[param] = (value)
-        except :
-            #wrong value
-            pass    
-    return param_dict
+from .. import SevconLib
 
 class TestProcedure( object ):
     def __init__( self,logger,randomObj, canObj, uartObj):
@@ -53,7 +29,7 @@ class TestProcedure( object ):
         sevconID = 0x298
         
         for RPM in range(-20000,20001) :
-            data = getRPMbytes(RPM)
+            data = SevconLib.getRPMbytes(RPM)
             expected = RPM
             
             #send CAN message to ECU
@@ -66,7 +42,7 @@ class TestProcedure( object ):
             #read UART string from ECU    
             rcvd_string = self.serialBus.read()
             self.logger.info("string received = %s",rcvd_string)
-            param_dict = extract_param_from_string(string=rcvd_string)
+            param_dict = SevconLib.extract_param_from_string(string=rcvd_string)
             if expected == param_dict['RPM'] :
                 self.logger.info("Pass")
             else :

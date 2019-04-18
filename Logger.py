@@ -1,5 +1,14 @@
 import logging
 import time
+import os
+
+def getPythonTestFiles(path=None):    
+    files = [] 
+    files_in_directory = os.listdir(path)
+    for File in files_in_directory:
+        if File.endswith('.py') and File.startswith('Test'):
+            files.append(File)
+    return files
 
 def getfilename():
     start_time = time.ctime()

@@ -10,14 +10,6 @@ import Logger
 
 testlogger = None
 
-def getPythonTestFiles(path=None):    
-    files = [] 
-    files_in_directory = os.listdir(path)
-    for File in files_in_directory:
-        if File.endswith('.py') and File.startswith('Test'):
-            files.append(File)
-    return files
-
 def main():    
     #initializing objects for use
     global testlogger
@@ -39,7 +31,7 @@ def main():
     #find the test files we need 
     dir_path = os.path.dirname(os.path.realpath(__file__)) + '\Tests'
     testlogger.info("Looking for a files in path = %s "% dir_path)
-    testFiles = getPythonTestFiles(dir_path)
+    testFiles = Logger.getPythonTestFiles(dir_path)
     sys.path.append(dir_path)
     
     #if only test has to be run then add only that test in 
