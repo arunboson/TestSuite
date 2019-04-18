@@ -10,7 +10,8 @@ import sys
 import os
 import logging
 import numpy
-from .. import SevconLib
+sys.path.append('..')
+import SevconLib
 
 class TestProcedure( object ):
     def __init__( self,logger,randomObj, canObj, uartObj):
