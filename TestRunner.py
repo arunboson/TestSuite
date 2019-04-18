@@ -55,7 +55,7 @@ def main():
         cycles = CmdLineArgObject.CycleCount 
         while cycles:
             testlogger.info("--"*20)
-            testlogger.info("Running test = %s",testname)
+            testlogger.info("Running test = %s CycleCount = %d",testname,cycles)
             testlogger.info("--"*20)
             testObj.Run()
             cycles -= 1

@@ -6,7 +6,7 @@ def getPythonTestFiles(path=None):
     files = [] 
     files_in_directory = os.listdir(path)
     for File in files_in_directory:
-        if File.endswith('.py') and File.startswith('Test'):
+        if File.endswith('.py'):
             files.append(File)
     return files
 
@@ -32,19 +32,19 @@ def getReportFile():
     return csv_file
 
 def passlog(testlogger):
-    testlogger.info("######     ###       #####    #####")
-    testlogger.info("##   ##   ## ##     ##       ##")
-    testlogger.info("##   ##  ##   ##    ##       ##")
-    testlogger.info("######  #########    #####    #####")
-    testlogger.info("##     ##       ##       ##       ##")
-    testlogger.info("##    ##         ##      ##       ##")
-    testlogger.info("##   ##           ## #####   ######")
+    testlogger.info("######     ##       #####    #####")
+    testlogger.info("##   ##   ####     ##       ##")
+    testlogger.info("##   ##  ##  ##    ##       ##")
+    testlogger.info("######  ########    #####    #####")
+    testlogger.info("##     ##      ##       ##       ##")
+    testlogger.info("##    ##        ##      ##       ##")
+    testlogger.info("##   ##          ## #####   ######")
     
 def faillog(testlogger):
-    testlogger.info("######      ###       ###### ##")
-    testlogger.info("##         ## ##        ##   ##")
-    testlogger.info("##        ##   ##       ##   ##")
-    testlogger.info("######   #########      ##   ##")
-    testlogger.info("##      ##       ##     ##   ##")
-    testlogger.info("##     ##         ##    ##   ##")
-    testlogger.info("##    ##           ## ###### #######")    
+    testlogger.info("######      ##       ###### ##")
+    testlogger.info("##         ####        ##   ##")
+    testlogger.info("##        ##  ##       ##   ##")
+    testlogger.info("######   ########      ##   ##")
+    testlogger.info("##      ##      ##     ##   ##")
+    testlogger.info("##     ##        ##    ##   ##")
+    testlogger.info("##    ##          ## ###### #######")    

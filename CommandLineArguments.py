@@ -39,7 +39,7 @@ class CommandLineArgs( object ):
         #if randomSeed is not passed take it randomly        
         if self.randomSeed == None:
             import random
-            self.randomSeed = random.Random().seed
+            self.randomSeed = random.randint(0,50000000)
     
     def printValues(self):
         self.logger.info("--"*12)
@@ -47,7 +47,7 @@ class CommandLineArgs( object ):
         self.logger.info("Cyclecount   = %d",self.CycleCount)
         self.logger.info("randomSeed   = %d",self.randomSeed)
         self.logger.info("testDuration = %d seconds",self.testDuration)
-        self.logger.info("testID       = %d",self.TestID)
+        self.logger.info("testID       = %s",self.TestID)
         self.logger.info("COM port     = %s",self.COMport)
         self.logger.info("logFilePath  = %s",self.logFilePath)
         self.logger.info("--"*12)

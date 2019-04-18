@@ -5,6 +5,7 @@ class SerialBus( object ):
         self.serialObject = serial.Serial()
         self.serialObject.baudrate = baudrate;
         self.serialObject.port = COM
+        self.serialObject.timeout = 2       #initializing with serial read timeout = 2 seconds
         self.logger = logger
         did_it_open = self.serialObject.open()    
     
@@ -23,9 +24,12 @@ class SerialBus( object ):
             return False
     
     def read(self,buffersize=-1):
-        x = self.serialObject.readline()
-        x= x.decode()
-        x = x.rsplit('\r\n')[0]
-        x = x.rsplit('\n')[0]
-        return x
+        try :
+            x = self.serialObject.readline()
+            x= x.decode()
+            x = x.rsplit('\r\n')[0]
+            x = x.rsplit('\n')[0]
+            return x            
+        except :
+            return None
         

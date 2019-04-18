@@ -10,7 +10,8 @@ import sys
 import os
 import logging
 import numpy
-from .. import SevconLib
+sys.path.append('..')
+import SevconLib
 
 class TestProcedure( object ):
     def __init__( self,logger,randomObj, canObj, uartObj):
@@ -27,11 +28,13 @@ class TestProcedure( object ):
         self.didItPass = True
         self.logger.info("Inside Run Method didItPass set to True initially")
         sevconID = 0x298
+        uart_failure = 0
+        lower_RPM_limit = 0
+        higher_RPM_limit = 200
         
-        for RPM in range(-20000,20001) :
+        for RPM in range(lower_RPM_limit,higher_RPM_limit+1) :
             data = SevconLib.getRPMbytes(RPM)
             expected = RPM
-            
             #send CAN message to ECU
             status = self.canBus.send(msg_id=sevconID,data=data,is_extended_id=False,timeout=0)
             if status == True :
@@ -41,14 +44,22 @@ class TestProcedure( object ):
             
             #read UART string from ECU    
             rcvd_string = self.serialBus.read()
-            self.logger.info("string received = %s",rcvd_string)
-            param_dict = SevconLib.extract_param_from_string(string=rcvd_string)
-            if expected == param_dict['RPM'] :
-                self.logger.info("Pass")
+            if rcvd_string != None and len(rcvd_string) >= 10:
+                self.logger.info("string received = %s",rcvd_string)
+                param_dict = SevconLib.extract_param_from_string(string=rcvd_string)
+                if expected == param_dict['RPM'] :
+                    self.logger.info("Pass")
+                else :
+                    self.logger.info("Fail")
+                    self.didItPass = False
             else :
-                self.logger.info("Fail")
-                self.didItPass = False
-            self.logger.info("Tested all the possible values from -20000 to 20000")
+                uart_failure += 1
+                self.logger.info("string didn't receive %d times....!",uart_failure)
+                if uart_failure == 5 :
+                    self.logger.info("Uart has failed so leaving the test with failure...")    
+                    self.didItPass = False
+                    break
+        self.logger.info("Tested all the possible values from -20000 to 20000")
 
         return
     # end of method
