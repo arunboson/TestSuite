@@ -7,7 +7,8 @@ def getPythonTestFiles(path=None):
     files_in_directory = os.listdir(path)
     for File in files_in_directory:
         if File.endswith('.py'):
-            files.append(File)
+            if "__init__" not in File :
+                files.append(File)
     return files
 
 def getfilename():

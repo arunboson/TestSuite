@@ -27,10 +27,11 @@ class TestProcedure( object ):
     def Run( self ):
         self.didItPass = True
         self.logger.info("Inside Run Method didItPass set to True initially")
-        sevconID = 0x298
+        sevconID = 0x361
         uart_failure = 0
-        lower_RPM_limit = 0
+        lower_RPM_limit = -200
         higher_RPM_limit = 200
+        wrong_string = 0
         
         for RPM in range(lower_RPM_limit,higher_RPM_limit+1) :
             data = SevconLib.getRPMbytes(RPM)
@@ -47,6 +48,13 @@ class TestProcedure( object ):
             if rcvd_string != None and len(rcvd_string) >= 10:
                 self.logger.info("string received = %s",rcvd_string)
                 param_dict = SevconLib.extract_param_from_string(string=rcvd_string)
+                if param_dict == None :
+                    wrong_string += 1
+                    self.logger.info("Lets ignore this string and increased wrong string count = %d",wrong_string)
+                    if wrong_string >= 5 :
+                        self.didItPass = False
+                        self.logger.info("5 wrong string recieved hence failing test case")
+                        return
                 if expected == param_dict['RPM'] :
                     self.logger.info("Pass")
                 else :
@@ -58,8 +66,8 @@ class TestProcedure( object ):
                 if uart_failure == 5 :
                     self.logger.info("Uart has failed so leaving the test with failure...")    
                     self.didItPass = False
-                    break
-        self.logger.info("Tested all the possible values from -20000 to 20000")
+                    return
+        self.logger.info("Tested all the possible values from %d to %d",lower_RPM_limit,higher_RPM_limit)
 
         return
     # end of method

@@ -27,11 +27,16 @@ class TestProcedure( object ):
     def Run( self ):
         self.didItPass = True
         self.logger.info("Inside Run Method didItPass set to True initially")
-        sevconID_for_batt_i = 0x298
+        sevconID_for_batt_i = 0x319
+        uart_failure = 0
+        wrong_string = 0
         
-        for batt_i in range(-20000,20001) :
+        lower_limit = -268
+        higher_limit = 267
+        
+        for batt_i in range(lower_limit,higher_limit+1) :
             data = SevconLib.batt_i_Bytes(batt_i)
-            expected = batt_i
+            expected = batt_i * 0.0625
             
             #send CAN message to ECU
             status = self.canBus.send(msg_id=sevconID_for_batt_i,data=data,is_extended_id=False,timeout=0)
@@ -39,18 +44,34 @@ class TestProcedure( object ):
                 self.logger.info("CAN message sent successfuly!")
             else :
                 self.logger.info("CAN message sending Failed..!")
-            
+
             #read UART string from ECU    
             rcvd_string = self.serialBus.read()
-            self.logger.info("string received = %s",rcvd_string)
-            param_dict = SevconLib.extract_param_from_string(string=rcvd_string)
-            if expected == param_dict['Batt_i'] :
-                self.logger.info("Pass")
+            if rcvd_string != None and len(rcvd_string) >= 10:
+                self.logger.info("string received = %s",rcvd_string)
+                param_dict = SevconLib.extract_param_from_string(string=rcvd_string)
+
+                if param_dict == None :
+                    wrong_string += 1
+                    self.logger.info("Lets ignore this string and increased wrong string count = %d",wrong_string)
+                    if wrong_string >= 5 :
+                        self.didItPass = False
+                        self.logger.info("5 wrong string recieved hence failing test case")
+                        return
+                
+                elif expected == param_dict['Batt_i'] :
+                    self.logger.info("Pass")
+                else :
+                    self.logger.info("Fail")
+                    self.didItPass = False
             else :
-                self.logger.info("Fail")
-                self.logger.info("expected batt_i = %f received batt_i = %f",expected,param_dict['Batt_i'])
-                self.didItPass = False
-            self.logger.info("Tested all the possible values from -20000 to 20000")
+                uart_failure += 1
+                self.logger.info("string didn't receive %d times....!",uart_failure)
+                if uart_failure == 5 :
+                    self.logger.info("Uart has failed so leaving the test with failure...")    
+                    self.didItPass = False
+                    break
+        self.logger.info("Tested all the possible values from %d to %d",lower_limit,higher_limit)
 
         return
     # end of method
